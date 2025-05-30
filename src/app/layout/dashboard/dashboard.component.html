@@ -1,0 +1,23 @@
+ <mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)">
+    <app-sidenav></app-sidenav>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <mat-toolbar>
+      <button mat-icon-button (click)="drawer.toggle()" *ngIf="isHandset$ | async">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="example-spacer"></span>
+      <button mat-icon-button [matMenuTriggerFor]="accountMenu">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #accountMenu="matMenu">
+        <button (click)="logout()" mat-menu-item>Cerrar sesión</button>
+      </mat-menu>
+    </mat-toolbar>
+    <div class="content">
+      <router-outlet></router-outlet>
+      <app-connection-status></app-connection-status>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

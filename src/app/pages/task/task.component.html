@@ -5,26 +5,6 @@
       <mat-icon>add</mat-icon>
       <span class="ml-2">Añadir Tarea</span>
     </button>
-
-    <div class="bg-white">
-      <button mat-button [matMenuTriggerFor]="filterMenu"
-        class="bg-white px-4 py-2 rounded-lg flex items-center shadow-md transition duration-300 ease-in-out">
-        <mat-icon>filter_list</mat-icon>
-        <span class="ml-2">Filtrar</span>
-      </button>
-
-      <mat-menu #filterMenu="matMenu" class="filter-menu">
-        <button mat-menu-item (click)="onFilterChange('all')">
-          <span class="text-gray-700 font-bold">Todas</span>
-        </button>
-        <button mat-menu-item (click)="onFilterChange('pending')">
-          <span class="text-yellow-600 font-bold">Pendientes</span>
-        </button>
-        <button mat-menu-item (click)="onFilterChange('completed')">
-          <span class="text-green-600 font-bold">Completadas</span>
-        </button>
-      </mat-menu>
-    </div>
   </div>
 
   <div class="overflow-x-auto rounded-lg shadow-lg bg-white">
@@ -35,24 +15,14 @@
         <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.id }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="title">
+      <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase bg-gray-100">Título</th>
-        <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.title }}</td>
+        <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.name }}</td>
       </ng-container>
 
       <ng-container matColumnDef="description">
         <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase bg-gray-100">Descripción</th>
         <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ row.description }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="isCompleted">
-        <th mat-header-cell *matHeaderCellDef mat-sort-header class="px-6 py-4 text-left text-sm font-semibold text-gray-700 uppercase bg-gray-100">Estado</th>
-        <td mat-cell *matCellDef="let row" class="px-6 py-4 whitespace-nowrap">
-          <span [ngClass]="{'bg-green-100 text-green-800': row.isCompleted, 'bg-yellow-100 text-yellow-800': !row.isCompleted}"
-                class="px-3 py-1 text-xs font-semibold rounded-full">
-            {{ row.isCompleted ? 'Completada' : 'Pendiente' }}
-          </span>
-        </td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
@@ -66,10 +36,7 @@
               <mat-icon class="mr-2">edit</mat-icon>
               <span>Editar</span>
             </button>
-            <button *ngIf="!row.isCompleted" mat-menu-item (click)="updateStateTask(row)" class="flex items-center text-green-600 hover:bg-green-50">
-              <mat-icon class="mr-2">check_circle</mat-icon>
-              <span>Completar Tarea</span>
-            </button>
+
             <button mat-menu-item (click)="deleteTask(row)" class="flex items-center text-red-600 hover:bg-red-50">
               <mat-icon class="mr-2">delete</mat-icon>
               <span>Eliminar</span>

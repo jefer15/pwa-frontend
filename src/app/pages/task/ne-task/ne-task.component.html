@@ -1,0 +1,31 @@
+<h2 mat-dialog-title>
+  Tarea
+  <button mat-icon-button aria-label="Cerrar diálogo" (click)="close()" class="float-right">
+    <mat-icon>close</mat-icon>
+  </button>
+</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="taskForm">
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>nombre</mat-label>
+      <input matInput formControlName="name" maxlength="50">
+      <mat-error *ngIf="taskForm.get('name')?.hasError('required') && taskForm.get('name')?.touched">
+        El nombre es requerido
+      </mat-error>
+      <mat-error *ngIf="taskForm.get('name')?.hasError('minlength') && taskForm.get('name')?.touched">
+        El nombre debe tener al menos 5 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput formControlName="description" rows="3"></textarea>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Cancelar</button>
+  <button mat-raised-button color="primary" [disabled]="taskForm.invalid" (click)="save()">Guardar</button>
+</mat-dialog-actions>

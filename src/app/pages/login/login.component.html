@@ -1,1 +1,44 @@
-<p>login works!</p>
+<div class="min-h-screen flex items-center justify-center bg-gray-100">
+    <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+      <form [formGroup]="loginForm">
+        <div class="mb-4">
+          <mat-form-field class="w-full">
+            <mat-label>Correo</mat-label>
+            <input matInput type="email" formControlName="email" class="mt-1 block w-full" />
+            <mat-error
+              *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
+              El correo es requerido.
+            </mat-error>
+            <mat-error
+              *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched">
+              El correo no es válido.
+            </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <div class="mb-4">
+          <mat-form-field appearance="fill" class="w-full">
+            <mat-label>Contraseña</mat-label>
+            <input matInput [type]="typePassword" formControlName="password" />
+            <button mat-icon-button matSuffix (click)="seePassword()">
+              <mat-icon>{{ typePassword === 'password' ? 'visibility_off' : 'visibility' }}</mat-icon>
+            </button>
+            <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+              La contraseña es requerida.
+            </mat-error>
+          </mat-form-field>
+        </div>
+  
+        <button mat-raised-button color="primary" type="submit" class="w-full py-2 px-4" [disabled]="loginForm.invalid"
+          (click)="login()">
+          Login
+        </button>
+      </form>
+
+      <div class="mt-4 text-center cursor-pointer">
+        <h5>¿No tienes cuenta? <span (click)="register()">Registrate</span></h5>
+      </div>
+    </div>
+  </div>
+  
