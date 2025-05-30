@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { Task } from '../../../models/task/task.model';
 @Component({
   selector: 'app-ne-task',
   standalone: true,
@@ -52,11 +53,12 @@ export class NeTaskComponent implements OnInit {
 
   save() {
     if (this.taskForm.valid) {
-      let dataTask = {
+      let dataTask: Task = {
         name: this.taskForm.get('name')?.value,
         description: this.taskForm.get('description')?.value,
       }
       if (this.data?.id) {
+        dataTask = { ...dataTask, id: this.data.id };
         this._taskService.updateTask(this.data?.id, dataTask).subscribe({
           next: (res: any) => {
             Swal.fire({
@@ -69,20 +71,6 @@ export class NeTaskComponent implements OnInit {
             }).then((result) => {
               this.close();
             });
-          },
-          error: (err: any) => {
-            if (err.error.code === 3) {
-              Swal.fire({
-                title: "Tarea",
-                text: "No se puedo actualizar la tarea porque el nombre ya existe",
-                icon: 'info',
-                confirmButtonText: 'Ok',
-                showConfirmButton: true,
-                showDenyButton: false
-              }).then((result) => {
-                this.close();
-              });
-            }
           }
         })
       } else {
@@ -98,20 +86,6 @@ export class NeTaskComponent implements OnInit {
             }).then((result) => {
               this.close();
             });
-          },
-          error: (err: any) => {
-            if (err.error.code === 3) {
-              Swal.fire({
-                title: "Tarea",
-                text: "No se puedo crear la tarea porque el nombre ya existe",
-                icon: 'info',
-                confirmButtonText: 'Ok',
-                showConfirmButton: true,
-                showDenyButton: false
-              }).then((result) => {
-                this.close();
-              });
-            }
           }
         })
       }

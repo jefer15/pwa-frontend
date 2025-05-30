@@ -7,14 +7,12 @@ export const routes: Routes = [
   { path: 'register', loadComponent: () => import('../app/pages/register/register.component').then(m => m.RegisterComponent) },
 
   {
-    path: 'dashboard',
+    path: '',
     canActivate: [AuthGuard],
     loadComponent: () => import('../app/layout/dashboard/dashboard.component').then(m => m.DashboardComponent),
     children: [
       { path: 'task', loadComponent: () => import('../app/pages/task/task.component').then(m => m.TaskComponent) },
       { path: '', redirectTo: 'task', pathMatch: 'full' }
     ]
-  },
-
-  { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+  }
 ];

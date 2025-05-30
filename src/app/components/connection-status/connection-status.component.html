@@ -1,0 +1,6 @@
+<div class="connection-status fixed bottom-5 right-5 px-5 py-2.5 rounded-full bg-green-500 text-white flex items-center gap-2.5 shadow-md transition-all duration-300 ease-in-out" [class.bg-red-500]="!(isOnline$ | async)">
+  <div class="status-indicator w-2.5 h-2.5 rounded-full bg-white"></div>
+  <div class="status-message text-sm">
+    {{ (isOnline$ | async) ? 'Conectado' : 'Sin conexión - Modo offline' }}
+  </div>
+</div>

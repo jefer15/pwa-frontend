@@ -20,7 +20,6 @@ export class TaskService {
   }
 
   private async initializeService() {
-    // Primero intentamos cargar los datos del servidor si estamos online
     if (navigator.onLine) {
       try {
         const tasks = await firstValueFrom(this._http.get<Task[]>(this.apiUrl));
@@ -30,14 +29,12 @@ export class TaskService {
         this.tasksSubject.next(tasks);
       } catch (error) {
         console.error('Error loading initial data:', error);
-        // Si falla, cargamos los datos locales
         await this.loadLocalData();
       }
     } else {
-      // Si estamos offline, cargamos los datos locales
       await this.loadLocalData();
     }
-    
+
     this.setupOnlineSync();
   }
 
@@ -50,7 +47,6 @@ export class TaskService {
     this.syncService.isOnline$().subscribe(async (isOnline) => {
       if (isOnline) {
         await this.syncPendingOperations();
-        // Recargamos los datos del servidor cuando volvemos a estar online
         try {
           const tasks = await firstValueFrom(this._http.get<Task[]>(this.apiUrl));
           for (const task of tasks) {
@@ -66,7 +62,7 @@ export class TaskService {
 
   private async syncPendingOperations() {
     const pendingOps = await this.syncService.getPendingOperations();
-    
+
     for (const op of pendingOps) {
       try {
         switch (op.type) {

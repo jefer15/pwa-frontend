@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit {
     private fb: FormBuilder,
     private _authService: AuthService,
     private router: Router,
-  ){
+  ) {
 
   }
 
@@ -36,7 +36,7 @@ export class LoginComponent implements OnInit {
     })
   }
 
-  register(){
+  register() {
     this.router.navigate(['/register'])
   }
 
@@ -44,37 +44,34 @@ export class LoginComponent implements OnInit {
     this.typePassword = (this.typePassword == "password") ? "text" : "password";
   }
 
-  login(){
+  login() {
     const data = {
-      email:this.loginForm.get('email')?.value,
-      password:this.loginForm.get('password')?.value
+      email: this.loginForm.get('email')?.value,
+      password: this.loginForm.get('password')?.value
     }
 
     this._authService.login(data).subscribe({
-      next: (res:any)=>{
-        if(res.code == 1) {
-          Swal.fire({
-            title: "Login Exitoso",
-            text: "A continuación entrará a la plataforma",
-            icon: 'success',
-            confirmButtonText: 'Ok',
-            showConfirmButton: true,
-            showDenyButton: false
-          }).then((result) => {
-            this.router.navigate(['/task'])
-          });
-        } else {
-          Swal.fire({
-            title: "Error en la autenticación",
-            text: "Datos incorrectos o Usuario no existente",
-            icon: 'warning',
-            confirmButtonText: 'Cerrar',
-            showConfirmButton: true,
-            showDenyButton: false
-          })
-        }
+      next: (res: any) => {
+        Swal.fire({
+          title: "Login Exitoso",
+          text: "A continuación entrará a la plataforma",
+          icon: 'success',
+          confirmButtonText: 'Ok',
+          showConfirmButton: true,
+          showDenyButton: false
+        }).then((result) => {
+          this.router.navigate(['/task'])
+        });
       },
-      error:()=>{
+      error: () => {
+        Swal.fire({
+          title: "Error en la autenticación",
+          text: "Datos incorrectos o Usuario no existente",
+          icon: 'warning',
+          confirmButtonText: 'Cerrar',
+          showConfirmButton: true,
+          showDenyButton: false
+        })
       }
     })
   }
