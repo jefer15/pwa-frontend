@@ -1,161 +1,133 @@
 # PWA Frontend
 
-## Descripción del Proyecto
-Este es un proyecto Progressive Web App (PWA) desarrollado con Angular 17, que permite a los usuarios acceder a la aplicación tanto en modo online como offline. La aplicación implementa estrategias avanzadas de sincronización y almacenamiento local para garantizar una experiencia fluida en cualquier condición de conectividad.
+## Project Description
+This is a Progressive Web App (PWA) project developed with Angular 17, allowing users to access the application both online and offline. The application implements advanced synchronization and local storage strategies to ensure a seamless experience regardless of connectivity conditions.
 
-## Requisitos Previos
-- Node.js (versión 18.x o superior)
-- Angular CLI (versión 17.x)
-- npm (incluido con Node.js)
+## Prerequisites
+- Node.js (version 18.x or higher)
+- Angular CLI (version 17.x)
+- npm (included with Node.js)
 
-## Instalación
+## Installation
 
-1. Clonar el repositorio:
+1. Clone the repository:
 bash
-git clone [URL_DEL_REPOSITORIO]
+git clone https://github.com/jefer15/pwa-frontend.git
 cd pwa-frontend
 
-
-2. Instalar dependencias:
-bash
+2. Install dependencies:
 npm install
 
-
-## Estructura del Proyecto
-
+## Project Structure
 
 src/
-├── app/                    # Directorio principal de la aplicación
-│   ├── auth/              # Módulo de autenticación
-│   ├── components/        # Componentes reutilizables
-│   ├── interceptor/       # Interceptores HTTP
-│   ├── layout/           # Componentes de diseño y estructura
-│   ├── models/           # Interfaces y tipos
-│   ├── pages/            # Componentes de página
-│   ├── services/         # Servicios y lógica de negocio
-│   ├── app.component.*   # Componente raíz
-│   ├── app.config.ts     # Configuración de la aplicación
-│   └── app.routes.ts     # Configuración de rutas
-├── assets/               # Recursos estáticos (imágenes, fuentes, etc.)
-├── environments/         # Configuraciones por entorno
-├── index.html           # Punto de entrada HTML
-├── main.ts             # Punto de entrada de la aplicación
-├── manifest.webmanifest # Configuración PWA
-└── styles.scss         # Estilos globales
+├── app/ # Application home directory
+│ ├── auth/ # Authentication module
+│ ├── components/ # Reusable components
+│ ├── interceptor/ # HTTP interceptors
+│ ├── layout/ # Layout and layout components
+│ ├── models/ # Interfaces and Types
+│ ├── pages/ # Page Components
+│ ├── services/ # Services and Business Logic
+│ ├── app.component.* # Root Component
+│ ├── app.config.ts # Application Configuration
+│ └── app.routes.ts # Route Configuration
+├── assets/ # Static Resources (images, fonts, etc.)
+├── environments/ # Per-Environment Configuration
+├── index.html # HTML Entry Point
+├── main.ts # Application Entry Point
+├── manifest.webmanifest # PWA Configuration
+└── styles.scss # Styles global
 
+### Directories Description
 
-### Descripción de Directorios
+- *auth/*: Contains authentication and authorization logic
+- *components/*: Reusable components throughout the application
+- *interceptor/*: HTTP interceptors for error handling and request transformation
+- *layout/*: Structure components such as header, footer, and sidebar
+- *models/*: TypeScript interfaces and types
+- *pages/*: Main components for each page/route
+- *services/*: Services for business logic and communication with APIs
+- *environments/*: Environment-specific configurations (development, production)
 
-- *auth/*: Contiene la lógica de autenticación y autorización
-- *components/*: Componentes reutilizables en toda la aplicación
-- *interceptor/*: Interceptores HTTP para manejo de errores y transformación de peticiones
-- *layout/*: Componentes de estructura como header, footer, sidebar
-- *models/*: Interfaces y tipos TypeScript
-- *pages/*: Componentes principales de cada página/ruta
-- *services/*: Servicios para lógica de negocio y comunicación con APIs
-- *assets/*: Recursos estáticos como imágenes, iconos y fuentes
-- *environments/*: Configuraciones específicas por entorno (desarrollo, producción)
+## Available Commands
 
-## Comandos Disponibles
-
-- Iniciar el servidor de desarrollo:
-bash
+- Start the development server:
 npm start
 
-
-- Construir el proyecto:
-bash
+- Build the project:
 npm run build
 
-
-- Ejecutar pruebas:
-bash
+- Run tests:
 npm test
 
+## Testing the Production Build
 
-## Prueba del Build de Producción
+To test the production version locally:
 
-Para probar la versión de producción localmente:
-
-1. Primero, construir el proyecto:
-bash
+1. First, build the project:
 npm run build
 
-
-2. Instalar http-server globalmente (si no está instalado):
-bash
+2. Install http-server Globally (if not installed):
 npm install -g http-server
 
-
-3. Servir la aplicación:
-bash
+3. Serve the application:
 http-server -p 8080 -c-1 dist/pwa-frontend/browser
 
+## Online/Offline Functionality
 
-## Funcionalidad Online/Offline
+The application is designed to work in both modes:
 
-La aplicación está diseñada para funcionar en ambos modos:
+### Online Mode
+- Full access to all features
+- Automatic data synchronization
+- Updating cached resources
 
-### Modo Online
-- Acceso completo a todas las funcionalidades
-- Sincronización automática de datos
-- Actualización de recursos en caché
+### Offline Mode
+- Access to previously stored data
+- Maintained basic functionality
+- Automatic synchronization when the connection is restored
 
-### Modo Offline
-- Acceso a datos previamente almacenados
-- Funcionalidad básica mantenida
-- Sincronización automática cuando se recupera la conexión
-
-## Tecnologías Utilizadas
+## Technologies Used
 
 ### Frontend
-- *Angular 17*: Framework principal para el desarrollo de la aplicación
-- *Angular Material*: Componentes UI predefinidos y estilizados
-- *TailwindCSS*: Framework CSS para estilos personalizados
-- *RxJS*: Manejo de programación reactiva y observables
-- *@angular/service-worker*: Implementación de Service Workers para funcionalidad PWA
-- *SweetAlert2*: Biblioteca para alertas y notificaciones interactivas
+- *Angular 17*: Main framework for application development
+- *Angular Material*: Predefined and styled UI components
+- *TailwindCSS*: CSS framework for custom styles
+- *RxJS*: Handles reactive programming and observables
+- *@angular/service-worker*: Service implementation Workers for PWA functionality
+- *SweetAlert2*: Library for interactive alerts and notifications
 
-### Almacenamiento y Sincronización
-- *IndexedDB (idb)*: Base de datos del lado del cliente para almacenamiento persistente
-- *Service Workers*: Para el manejo de caché y funcionalidad offline
-- *Local Storage*: Almacenamiento de datos de configuración y preferencias
+### Storage and Synchronization
+- *IndexedDB (idb)*: Client-side database for persistent storage
+- *Service Workers*: For caching and offline functionality
+- *Local Storage*: Storing configuration and preference data
 
-## Implementación Técnica
+## Technical Implementation
 
-### Almacenamiento Local
-- Utilización de IndexedDB para almacenamiento estructurado de datos
-- Implementación de estrategias de caché para recursos estáticos
-- Manejo de cuotas de almacenamiento y limpieza automática
+### Local Storage
+- Using IndexedDB for structured data storage
+- Implementing caching strategies for static resources
+- Managing storage quotas and automatic cleanup
 
-### Sincronización Online/Offline
-- Implementación de colas de sincronización para operaciones pendientes
-- Políticas de reintento automático para operaciones fallidas
-- Manejo de conflictos en la sincronización de datos
+### Online/Offline Synchronization
+- Implementing synchronization queues for pending operations
+- Automatic retry policies for failed operations
+- Handling conflicts in data synchronization
 
-### Manejo de Errores
-- Interceptores HTTP para manejo centralizado de errores
-- Sistema de logging para seguimiento de errores
-- Recuperación automática de fallos de red
+### Error Handling
+- HTTP interceptors for centralized error handling
+- Logging system for error tracking
+- Automatic recovery from network failures
 
-### Políticas de Reintento
-- Reintentos exponenciales para operaciones fallidas
-- Límites de reintentos configurables por tipo de operación
-- Notificaciones al usuario sobre el estado de las operaciones
+### Retry Policies
+- Retries Exponentials for failed operations
+- Configurable retry limits per operation type
+- User notifications about operation status
 
-## Detalles Técnicos Relevantes
+## Relevant Technical Details
 
 ### Service Worker
-- Registro y actualización automática
-- Estrategias de caché para diferentes tipos de recursos
-- Manejo de actualizaciones de la aplicación
-
-### IndexedDB
-- Estructura de base de datos optimizada
-- Transacciones atómicas para operaciones críticas
-- Índices para búsquedas eficientes
-
-### Optimizaciones
-- Lazy loading de módulos
-- Prefetching de recursos críticos
-- Compresión y optimización de assets
+- Automatic registration and updating
+- Caching strategies for different resource types
+- Handling application updates
