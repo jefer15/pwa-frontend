@@ -1,6 +1,6 @@
-<div class="min-h-screen flex items-center justify-center bg-gray-100">
+<div class="min-h-screen flex items-center justify-center bg-[#4b5172]">
     <div class="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-      <h2 class="text-2xl font-bold mb-6 text-center">Register</h2>
+      <h2 class="text-2xl font-bold mb-6 text-center">Registro</h2>
       <form [formGroup]="registerForm">
   
         <div class="mb-4">
@@ -91,18 +91,18 @@
   
         <button
           mat-raised-button
-          color="primary"
+          style="background-color: #4b5172;"
           type="submit"
-          class="w-full py-2 px-4"
+          class="w-full py-2 px-4 text-white"
           [disabled]="registerForm.invalid"
           (click)="register()"
         >
-          Registrarme
+          Registrarse
         </button>
       </form>
   
       <div class="mt-4 text-center cursor-pointer">
-        <h5>¿Ya tienes una cuenta? <span (click)="login()">Login</span></h5>
+        <h5 class="text-gray-700">¿Ya tienes cuenta? <span class="text-[#4b5172] hover:text-[#3d4259]" (click)="login()">Inicia sesión</span></h5>
       </div>
     </div>
   </div>

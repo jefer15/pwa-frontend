@@ -11,82 +11,83 @@ import { SyncService } from "../sync/sync.service";
 export class TaskService {
   private apiUrl = `${environment.uri}/task`;
   private tasksSubject = new BehaviorSubject<Task[]>([]);
+  private isSyncing = false;
 
   constructor(
     private _http: HttpClient,
     private syncService: SyncService
   ) {
     this.initializeService();
+    window.addEventListener('online', this.handleOnline.bind(this));
+  }
+
+  private async handleOnline() {
+    if (this.isSyncing) return;
+    
+    try {
+      this.isSyncing = true;
+      console.log('Iniciando sincronización');
+      
+      // 1. Obtener todas las operaciones pendientes
+      const pendingOps = await this.syncService.getPendingOperations();
+      console.log('Operaciones pendientes:', pendingOps);
+
+      if (pendingOps.length > 0) {
+        // 2. Procesar cada operación
+        for (const op of pendingOps) {
+          try {
+            if (op.type === 'create') {
+              await firstValueFrom(this._http.post<Task>(this.apiUrl, op.task));
+            } else if (op.type === 'update') {
+              await firstValueFrom(this._http.put<void>(`${this.apiUrl}/${op.task.id}`, op.task));
+            } else if (op.type === 'delete') {
+              await firstValueFrom(this._http.delete<void>(`${this.apiUrl}/${op.task.id}`));
+            }
+          } catch (error) {
+            console.error('Error procesando operación:', op, error);
+          }
+        }
+
+        // 3. Limpiar todas las operaciones pendientes
+        await this.syncService.clearPendingOperations();
+      }
+
+      // 4. Obtener el estado actual del servidor
+      const serverTasks = await firstValueFrom(this._http.get<Task[]>(this.apiUrl));
+      
+      // 5. Actualizar el estado local
+      await this.syncService.clearAllTasks();
+      for (const task of serverTasks) {
+        await this.syncService.saveTask(task);
+      }
+      this.tasksSubject.next(serverTasks);
+
+      console.log('Sincronización completada');
+    } catch (error) {
+      console.error('Error en sincronización:', error);
+    } finally {
+      this.isSyncing = false;
+    }
   }
 
   private async initializeService() {
     if (navigator.onLine) {
       try {
         const tasks = await firstValueFrom(this._http.get<Task[]>(this.apiUrl));
+        await this.syncService.clearAllTasks();
         for (const task of tasks) {
           await this.syncService.saveTask(task);
         }
         this.tasksSubject.next(tasks);
       } catch (error) {
-        console.error('Error loading initial data:', error);
-        await this.loadLocalData();
+        console.error('Error cargando datos iniciales:', error);
+        const localTasks = await this.syncService.getAllTasks();
+        this.tasksSubject.next(localTasks);
       }
     } else {
-      await this.loadLocalData();
+      const localTasks = await this.syncService.getAllTasks();
+      this.tasksSubject.next(localTasks);
     }
-
-    this.setupOnlineSync();
-  }
-
-  private async loadLocalData() {
-    const tasks = await this.syncService.getAllTasks();
-    this.tasksSubject.next(tasks);
-  }
-
-  private setupOnlineSync() {
-    this.syncService.isOnline$().subscribe(async (isOnline) => {
-      if (isOnline) {
-        await this.syncPendingOperations();
-        try {
-          const tasks = await firstValueFrom(this._http.get<Task[]>(this.apiUrl));
-          for (const task of tasks) {
-            await this.syncService.saveTask(task);
-          }
-          this.tasksSubject.next(tasks);
-        } catch (error) {
-          console.error('Error syncing with server:', error);
-        }
-      }
-    });
-  }
-
-  private async syncPendingOperations() {
-    const pendingOps = await this.syncService.getPendingOperations();
-
-    for (const op of pendingOps) {
-      try {
-        switch (op.type) {
-          case 'create':
-            await firstValueFrom(this._http.post<Task>(this.apiUrl, op.task));
-            break;
-          case 'update':
-            await firstValueFrom(this._http.put<void>(`${this.apiUrl}/${op.task.id}`, op.task));
-            break;
-          case 'delete':
-            await firstValueFrom(this._http.delete<void>(`${this.apiUrl}/${op.task.id}`));
-            break;
-        }
-      } catch (error) {
-        console.error('Error syncing operation:', error);
-        continue;
-      }
-    }
-
-    await this.syncService.clearPendingOperations();
-  }
-
-  getTasks(): Observable<Task[]> {
-    return this.tasksSubject.asObservable();
   }
 
   addTask(task: Task): Observable<Task> {
@@ -103,12 +104,13 @@ export class TaskService {
         } else {
           const tempId = Date.now();
           const offlineTask = { ...task, id: tempId };
-          return from(this.syncService.saveTask(offlineTask).then(() => {
-            this.syncService.addPendingOperation('create', offlineTask);
+          return from((async () => {
+            await this.syncService.saveTask(offlineTask);
+            await this.syncService.addPendingOperation('create', offlineTask);
             const currentTasks = this.tasksSubject.value;
             this.tasksSubject.next([...currentTasks, offlineTask]);
             return offlineTask;
-          }));
+          })());
         }
       })
     );
@@ -127,12 +129,13 @@ export class TaskService {
             })
           );
         } else {
-          return from(this.syncService.saveTask(task).then(() => {
-            this.syncService.addPendingOperation('update', task);
+          return from((async () => {
+            await this.syncService.saveTask(task);
+            await this.syncService.addPendingOperation('update', task);
             const currentTasks = this.tasksSubject.value;
             const updatedTasks = currentTasks.map(t => t.id === id ? task : t);
             this.tasksSubject.next(updatedTasks);
-          }));
+          })());
         }
       })
     );
@@ -152,15 +155,21 @@ export class TaskService {
         } else {
           const taskToDelete = this.tasksSubject.value.find(t => t.id === id);
           if (taskToDelete) {
-            return from(this.syncService.deleteTask(id).then(() => {
-              this.syncService.addPendingOperation('delete', taskToDelete);
+            return from((async () => {
+              await this.syncService.deleteTask(id);
+              await this.syncService.addPendingOperation('delete', taskToDelete);
               const currentTasks = this.tasksSubject.value;
               this.tasksSubject.next(currentTasks.filter(t => t.id !== id));
-            }));
+            })());
           }
           return of(void 0);
         }
       })
     );
   }
+
+  getTasks(): Observable<Task[]> {
+    return this.tasksSubject.asObservable();
+  }
 }
+

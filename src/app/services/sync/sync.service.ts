@@ -3,18 +3,22 @@ import { BehaviorSubject, Observable, from } from 'rxjs';
 import { openDB, DBSchema, IDBPDatabase } from 'idb';
 import { Task } from '../../models/task/task.model';
 
+interface PendingOperation {
+  id?: number;
+  type: 'create' | 'update' | 'delete';
+  task: Task;
+  timestamp: number;
+}
+
 interface TaskDB extends DBSchema {
   tasks: {
     key: number;
     value: Task;
   };
   pendingOperations: {
-    key: string;
-    value: {
-      type: 'create' | 'update' | 'delete';
-      task: Task;
-      timestamp: number;
-    };
+    key: number;
+    value: PendingOperation;
+    indexes: { 'by-id': number };
   };
 }
 
@@ -37,7 +41,11 @@ export class SyncService {
     this.db = await openDB<TaskDB>(this.DB_NAME, this.DB_VERSION, {
       upgrade(db) {
         db.createObjectStore('tasks', { keyPath: 'id' });
-        db.createObjectStore('pendingOperations', { keyPath: 'id', autoIncrement: true });
+        const pendingOpsStore = db.createObjectStore('pendingOperations', { 
+          keyPath: 'id', 
+          autoIncrement: true 
+        });
+        pendingOpsStore.createIndex('by-id', 'id');
       },
     });
   }
@@ -62,6 +70,11 @@ export class SyncService {
     await this.db!.delete('tasks', id);
   }
 
+  async clearAllTasks(): Promise<void> {
+    if (!this.db) await this.initDB();
+    await this.db!.clear('tasks');
+  }
+
   async addPendingOperation(type: 'create' | 'update' | 'delete', task: Task): Promise<void> {
     if (!this.db) await this.initDB();
     await this.db!.add('pendingOperations', {
@@ -71,11 +84,7 @@ export class SyncService {
     });
   }
 
-  async getPendingOperations(): Promise<Array<{
-    type: 'create' | 'update' | 'delete';
-    task: Task;
-    timestamp: number;
-  }>> {
+  async getPendingOperations(): Promise<PendingOperation[]> {
     if (!this.db) await this.initDB();
     return await this.db!.getAll('pendingOperations');
   }
@@ -83,6 +92,18 @@ export class SyncService {
   async clearPendingOperations(): Promise<void> {
     if (!this.db) await this.initDB();
     await this.db!.clear('pendingOperations');
+  }
+
+  async removePendingOperation(operation: { type: 'create' | 'update' | 'delete', task: Task }): Promise<void> {
+    if (!this.db) await this.initDB();
+    const allOps = await this.getPendingOperations();
+    const opToRemove = allOps.find(op => 
+      op.type === operation.type && 
+      op.task.id === operation.task.id
+    );
+    if (opToRemove?.id) {
+      await this.db!.delete('pendingOperations', opToRemove.id);
+    }
   }
 
   isOnline$(): Observable<boolean> {
